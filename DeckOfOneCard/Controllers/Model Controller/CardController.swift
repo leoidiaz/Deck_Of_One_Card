@@ -11,7 +11,7 @@ import UIKit.UIImage
 
 class CardController {
     static let baseURL = URL(string: "https://deckofcardsapi.com/api/deck/new/draw/?count=1")
-    static func fetchCard(completion: @escaping (Result<Deck, CardError>) -> Void){
+    static func fetchCard(completion: @escaping (Result<Cards, CardError>) -> Void){
         //1 Prepare URL
         guard let baseURL = baseURL else { return completion(.failure(.invalidURL))}
         //2 Contact Server
@@ -26,7 +26,8 @@ class CardController {
             //5 Decode
             do {
                 let decoder = JSONDecoder()
-                let card = try decoder.decode(Deck.self, from: data)
+                let deck = try decoder.decode(Deck.self, from: data)
+                guard let card = deck.cards.first else { return completion(.failure(.noData))}
                 completion(.success(card))
             } catch {
                 print(error, error.localizedDescription)
